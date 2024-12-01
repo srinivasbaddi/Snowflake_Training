@@ -1,0 +1,49 @@
+--assignment -3
+--Task-1
+
+--Create a row access policy:
+
+CREATE ROW ACCESS POLICY region_policy AS
+ (user_region STRING, data_region STRING) RETURNS BOOLEAN -> user_region = data_region;
+
+ --use role securityadmin
+ --Apply the policy to a table:
+ ALTER TABLE PatientRecords ADD ROW ACCESS POLICY region_policy ON (region,region);
+ 
+ --Test the policy:
+ SELECT * FROM PatientRecords
+
+ --Task-2
+
+ --Create a production table and insert data for demonstration.
+ CREATE OR REPLACE TABLE PatientRecords (
+ PatientID INT,
+ Name STRING,
+ Diagnosis STRING,
+ AdmissionDate DATE,
+ region string
+ );
+
+ INSERT INTO PatientRecords VALUES
+ (1, 'Alice', 'Flu', '2024-11-01','region1'),
+ (2, 'Bob', 'Cold', '2024-11-02','region2'),
+ (3, 'Charlie', 'Asthma', '2024-11-03','region3');
+
+ UPDATE PatientRecords
+ SET Diagnosis = 'Pneumonia'
+ WHERE PatientID = 1;
+
+ CREATE OR REPLACE TABLE PatientRecordsClone
+ CLONE PatientRecords
+ AT (OFFSET => -60); -- Clones data from 60 seconds ago
+
+ -- Query the Clon
+ SELECT * FROM PatientRecordsClone;
+
+ -- Query the Original
+ SELECT * FROM PatientRecords;
+
+
+ 
+
+ 
